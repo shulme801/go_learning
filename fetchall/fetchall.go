@@ -9,17 +9,23 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"strings"
 )
 
 func main() {
+	pref := "https://"
 	start := time.Now()
 	ch := make(chan string)
 	for _, url := range os.Args[1:] {
+		
+		if !strings.HasPrefix(url, pref) {
+			url = pref + url
+		}
 		go fetch(url, ch) // start a goroutine
 	}
 
 	for range os.Args[1:] {
-		fmt.Println(<-ch) // receive from channel ch
+		fmt.Println(<-ch) // receive from channel ch -- see p. 18 of text
 	}
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
 }
