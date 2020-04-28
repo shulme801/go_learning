@@ -1,4 +1,7 @@
 // Server 2 is a minimal "echo" and counter server.package main
+// If you want to run it:
+//   sudo lsof -i:8000 ##make sure nobody else is listening on port 8000
+//   go run server2.go &
 
 package main
 
