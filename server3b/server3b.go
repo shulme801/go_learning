@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"sync"	
 	"image"
 	"image/color"
@@ -18,10 +19,7 @@ import (
 //	"os"
 )
 
-const (
-	whiteIndex = 0
-	blackIndex = 1
-)
+
 
 var palette = []color.Color{color.White, color.Black}
 var mu sync.Mutex
@@ -30,20 +28,28 @@ var f = fmt.Fprintf
 
 func main() {
 	//Run lissajous and turn off the echo.
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
-    	lissajous(w)
-	})
+	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
+    //	lissajous(w)
+	//})
 
-//	http.HandleFunc("/", handler)
+	http.HandleFunc("/", handler)
 	http.HandleFunc("/count", counter)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
 
-// handle echoes the http request
+// handler echoes the http request
 func handler(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	count++
 	mu.Unlock()
+
+	
+	u, err := url.Parse(*r.URL)
+	if err != nil {
+		panic(err)
+	}
+	f(w, "URL is %s", u.URL)
+	f(w, u.RawQuery)
 	f(w, "%s %s %s\n", r.Method, r.URL, r.Proto)
 	for k, v := range r.Header {
 		f(w, "Header[%q] = %q\n", k, v)
